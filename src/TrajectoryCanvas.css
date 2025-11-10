@@ -1,0 +1,9 @@
+.trajectory-wrapper {
+  height: 250px;
+  border: 2px solid white;
+  border-radius: 16px;
+  max-width: 100%;
+  overflow: "hidden";
+  text-align: center;
+  padding-top: 8px;
+}

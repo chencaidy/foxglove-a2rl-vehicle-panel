@@ -1,0 +1,40 @@
+.powertrain-wrapper {
+  height: 250px;
+  border: 2px solid white;
+  border-radius: 16px;
+  margin-right: 8px;
+  width: auto;
+}
+
+.powertrain-divider {
+  border: 1px solid white;
+  margin-bottom: 8px;
+}
+
+.powertrain-segment {
+  margin: 8px;
+}
+
+.ped-wrapper {
+  height: 250px;
+  border: 2px solid white;
+  border-radius: 16px;
+  margin-right: 8px;
+  text-align: center;
+  padding-top: 8px;
+}
+
+.ped-title {
+  font-size: 16px;
+}
+
+.ped-progress {
+  width: 16px;
+  margin: 8px 0 8px 8px;
+  background: linear-gradient(0deg, var(--color), var(--color) var(--percent), transparent 0);
+  border: 1px solid var(--color);
+}
+
+.ped-progress-end {
+  margin-right: 8px;
+}
