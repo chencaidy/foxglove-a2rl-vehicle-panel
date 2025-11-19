@@ -66,29 +66,29 @@ function VehiclePanel({ context }: { context: PanelExtensionContext }): ReactEle
       // currentFrame has messages on subscribed topics since the last render call
       if (renderState.currentFrame && renderState.currentFrame.length > 0) {
         renderState.currentFrame.forEach((frame) => {
-          if (frame.topic === "/flyeagle/a2rl/controller/brake") {
+          if (frame.topic === "/throttled/flyeagle/a2rl/controller/brake") {
             setControlBrake(frame.message as ControllerBrake);
-          } else if (frame.topic === "/flyeagle/a2rl/eav25_bsu/brake_disk_temp") {
+          } else if (frame.topic === "/throttled/flyeagle/a2rl/eav25_bsu/brake_disk_temp") {
             setBrakeDiskTemp(frame.message as Brake_Disk_Temp);
-          } else if (frame.topic === "/flyeagle/a2rl/eav25_bsu/cba_status_fl") {
+          } else if (frame.topic === "/throttled/flyeagle/a2rl/eav25_bsu/cba_status_fl") {
             setCbaStatusFL(frame.message as CBA_Status_FL);
-          } else if (frame.topic === "/flyeagle/a2rl/eav25_bsu/cba_status_fr") {
+          } else if (frame.topic === "/throttled/flyeagle/a2rl/eav25_bsu/cba_status_fr") {
             setCbaStatusFR(frame.message as CBA_Status_FR);
-          } else if (frame.topic === "/flyeagle/a2rl/eav25_bsu/cba_status_rl") {
+          } else if (frame.topic === "/throttled/flyeagle/a2rl/eav25_bsu/cba_status_rl") {
             setCbaStatusRL(frame.message as CBA_Status_RL);
-          } else if (frame.topic === "/flyeagle/a2rl/eav25_bsu/cba_status_rr") {
+          } else if (frame.topic === "/throttled/flyeagle/a2rl/eav25_bsu/cba_status_rr") {
             setCbaStatusRR(frame.message as CBA_Status_RR);
-          } else if (frame.topic === "/flyeagle/a2rl/eav25_bsu/ice_status_01") {
+          } else if (frame.topic === "/throttled/flyeagle/a2rl/eav25_bsu/ice_status_01") {
             setIceStatus1(frame.message as ICE_Status_01);
-          } else if (frame.topic === "/flyeagle/a2rl/eav25_bsu/ice_status_02") {
+          } else if (frame.topic === "/throttled/flyeagle/a2rl/eav25_bsu/ice_status_02") {
             setIceStatus2(frame.message as ICE_Status_02);
-          } else if (frame.topic === "/flyeagle/a2rl/eav25_bsu/tyre_surface_temp_front") {
+          } else if (frame.topic === "/throttled/flyeagle/a2rl/eav25_bsu/tyre_surface_temp_front") {
             setTireTempFront(frame.message as Tyre_Surface_Temp_Front);
-          } else if (frame.topic === "/flyeagle/a2rl/eav25_bsu/tyre_surface_temp_rear") {
+          } else if (frame.topic === "/throttled/flyeagle/a2rl/eav25_bsu/tyre_surface_temp_rear") {
             setTireTempRear(frame.message as Tyre_Surface_Temp_Rear);
-          } else if (frame.topic === "/sensor/kistler/measurement") {
+          } else if (frame.topic === "/throttled/sensor/kistler/measurement") {
             setKistlerMeas(frame.message as Kistler);
-          } else if (frame.topic === "/sensor/bosch/imu") {
+          } else if (frame.topic === "/throttled/sensor/bosch/imu") {
             const imu = frame.message as Imu;
             trajectoryRef.current?.addPoint(
               (imu.linear_acceleration.y / 9.8) * 25 + 100,
@@ -112,18 +112,18 @@ function VehiclePanel({ context }: { context: PanelExtensionContext }): ReactEle
     // subscribe to some topics, you could do this within other effects, based on input fields, etc
     // Once you subscribe to topics, currentFrame will contain message events from those topics (assuming there are messages).
     context.subscribe([
-      { topic: "/flyeagle/a2rl/controller/brake" }, // (100Hz)
-      { topic: "/flyeagle/a2rl/eav25_bsu/brake_disk_temp" }, // (20Hz)
-      { topic: "/flyeagle/a2rl/eav25_bsu/cba_status_fl" }, // (100Hz)
-      { topic: "/flyeagle/a2rl/eav25_bsu/cba_status_fr" }, // (100Hz)
-      { topic: "/flyeagle/a2rl/eav25_bsu/cba_status_rl" }, // (100Hz)
-      { topic: "/flyeagle/a2rl/eav25_bsu/cba_status_rr" }, // (100Hz)
-      { topic: "/flyeagle/a2rl/eav25_bsu/ice_status_01" }, // Throttle and Gear (100Hz)
-      { topic: "/flyeagle/a2rl/eav25_bsu/ice_status_02" }, // RPM (100Hz)
-      { topic: "/flyeagle/a2rl/eav25_bsu/tyre_surface_temp_front" }, // (20Hz)
-      { topic: "/flyeagle/a2rl/eav25_bsu/tyre_surface_temp_rear" }, // (20Hz)
-      { topic: "/sensor/kistler/measurement" }, // (250Hz)
-      { topic: "/sensor/bosch/imu" }, // (200Hz)
+      { topic: "/throttled/flyeagle/a2rl/controller/brake" },
+      { topic: "/throttled/flyeagle/a2rl/eav25_bsu/brake_disk_temp" },
+      { topic: "/throttled/flyeagle/a2rl/eav25_bsu/cba_status_fl" },
+      { topic: "/throttled/flyeagle/a2rl/eav25_bsu/cba_status_fr" },
+      { topic: "/throttled/flyeagle/a2rl/eav25_bsu/cba_status_rl" },
+      { topic: "/throttled/flyeagle/a2rl/eav25_bsu/cba_status_rr" },
+      { topic: "/throttled/flyeagle/a2rl/eav25_bsu/ice_status_01" },
+      { topic: "/throttled/flyeagle/a2rl/eav25_bsu/ice_status_02" },
+      { topic: "/throttled/flyeagle/a2rl/eav25_bsu/tyre_surface_temp_front" },
+      { topic: "/throttled/flyeagle/a2rl/eav25_bsu/tyre_surface_temp_rear" },
+      { topic: "/throttled/sensor/kistler/measurement" },
+      { topic: "/throttled/sensor/bosch/imu" },
     ]);
   }, [context]);
 

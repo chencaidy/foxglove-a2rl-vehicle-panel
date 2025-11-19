@@ -4,7 +4,7 @@
   "description": "A foxglove extension for A2RL racing car.",
   "publisher": "Caidy",
   "homepage": "chen@caidy.cc",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "license": "MIT",
   "main": "./dist/extension.js",
   "keywords": [],
