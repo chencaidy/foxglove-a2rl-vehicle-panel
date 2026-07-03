@@ -91,8 +91,8 @@ function VehiclePanel({ context }: { context: PanelExtensionContext }): ReactEle
           } else if (frame.topic === "/throttled/sensor/kistler/imu") {
             const imu = frame.message as Imu;
             trajectoryRef.current?.addPoint(
-              (imu.linear_acceleration.y / 9.8) * 25 + 100,
-              (imu.linear_acceleration.x / 9.8) * 25 + 100,
+              -(imu.linear_acceleration.y / 9.81) * 25 + 100,
+              (imu.linear_acceleration.x / 9.81) * 25 + 100,
             );
           }
         });
