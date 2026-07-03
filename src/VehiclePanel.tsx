@@ -88,7 +88,7 @@ function VehiclePanel({ context }: { context: PanelExtensionContext }): ReactEle
             setTireTempRear(frame.message as Tyre_Surface_Temp_Rear);
           } else if (frame.topic === "/throttled/sensor/kistler/measurement") {
             setKistlerMeas(frame.message as Kistler);
-          } else if (frame.topic === "/throttled/sensor/bosch/imu") {
+          } else if (frame.topic === "/throttled/sensor/kistler/imu") {
             const imu = frame.message as Imu;
             trajectoryRef.current?.addPoint(
               (imu.linear_acceleration.y / 9.8) * 25 + 100,
@@ -123,7 +123,7 @@ function VehiclePanel({ context }: { context: PanelExtensionContext }): ReactEle
       { topic: "/throttled/flyeagle/a2rl/eav25_bsu/tyre_surface_temp_front" },
       { topic: "/throttled/flyeagle/a2rl/eav25_bsu/tyre_surface_temp_rear" },
       { topic: "/throttled/sensor/kistler/measurement" },
-      { topic: "/throttled/sensor/bosch/imu" },
+      { topic: "/throttled/sensor/kistler/imu" },
     ]);
   }, [context]);
 
