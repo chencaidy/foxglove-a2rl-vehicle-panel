@@ -8,6 +8,7 @@ export type PowertrainParam = {
   speed: number;
   gear: number;
   downshift: number;
+  p2p: number;
 };
 
 export type DbwParam = {
@@ -42,14 +43,18 @@ export function PowertrainInfo({ param }: { param: PowertrainParam }): ReactElem
           color="#fff"
         />
       </div>
-      <span style={{ paddingLeft: 8 }}>KM/H</span>
+      <div style={{ display: "flex", width: "100%", paddingLeft: 8, paddingRight: 8 }}>
+        <span>KM/H</span>
+        {param.p2p > 0 && <span style={{ marginLeft: "auto", fontWeight: "bold" }}>P2P</span>}
+      </div>
       <div className="powertrain-segment">
         <SevenSegmentDisplay
+          key={`speed-${param.p2p}`}
           value={param.speed.toFixed(0)}
           height={60}
           segmentSize={3}
           bgColor="#222"
-          color="#fff"
+          color={param.p2p > 0 ? "#ff8800" : "#fff"}
           startFromEnd
         />
       </div>

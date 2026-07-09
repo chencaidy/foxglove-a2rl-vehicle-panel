@@ -190,6 +190,7 @@ function VehiclePanel({ context }: { context: PanelExtensionContext }): ReactEle
           speed: kistlerMeas ? kistlerMeas.resultant_velocity.x * 3.6 : -1,
           gear: iceStatus1 ? iceStatus1.ice_actual_gear : 0,
           downshift: iceStatus1 ? iceStatus1.ice_downshift_available : 0,
+          p2p: iceStatus1 ? iceStatus1.ice_push_to_pass_req : 0,
         }}
       />
       <PowertrainPed
