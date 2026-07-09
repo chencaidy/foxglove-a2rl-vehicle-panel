@@ -25,7 +25,7 @@ export function PowertrainInfo({ param }: { param: PowertrainParam }): ReactElem
           height={20}
           segmentSize={5}
           bgColor="#222"
-          color="#fff"
+          color={param.rpm > 6000 ? "#f00" : "#fff"}
           spacing={4}
           startFromEnd
         />
