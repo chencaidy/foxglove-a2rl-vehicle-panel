@@ -1,5 +1,11 @@
 # vehicle-panel version history
 
+## 1.0.3
+
+- feature: add p2p mode display
+- feature: add downshift available tip
+- feature: add high rpm color
+
 ## 1.0.2
 
 - fix: g-force lateral direction
