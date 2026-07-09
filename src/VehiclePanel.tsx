@@ -187,8 +187,9 @@ function VehiclePanel({ context }: { context: PanelExtensionContext }): ReactEle
       <PowertrainInfo
         param={{
           rpm: iceStatus2 ? iceStatus2.ice_engine_speed_rpm : -1,
-          gear: iceStatus1 ? iceStatus1.ice_actual_gear : 0,
           speed: kistlerMeas ? kistlerMeas.resultant_velocity.x * 3.6 : -1,
+          gear: iceStatus1 ? iceStatus1.ice_actual_gear : 0,
+          downshift: iceStatus1 ? iceStatus1.ice_downshift_available : 0,
         }}
       />
       <PowertrainPed

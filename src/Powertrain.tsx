@@ -7,6 +7,7 @@ export type PowertrainParam = {
   rpm: number;
   speed: number;
   gear: number;
+  downshift: number;
 };
 
 export type DbwParam = {
@@ -31,7 +32,7 @@ export function PowertrainInfo({ param }: { param: PowertrainParam }): ReactElem
         />
       </div>
       <div className="powertrain-divider" />
-      <span style={{ paddingLeft: 8, paddingTop: 8 }}>GEAR</span>
+      <span style={{ paddingLeft: 8, paddingTop: 8 }}>GEAR{param.downshift > 0 && "↓"}</span>
       <div className="powertrain-segment">
         <SevenSegmentDisplay
           value={param.gear.toFixed(0)}
