@@ -15,7 +15,6 @@ export type DbwParam = {
   clutch: number;
   brake: number;
   throttle: number;
-  steering: number;
 };
 
 export function PowertrainInfo({ param }: { param: PowertrainParam }): ReactElement {

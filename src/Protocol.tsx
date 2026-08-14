@@ -68,6 +68,16 @@ export type ICE_Status_02 = {
   ice_oil_press_k_pa: number;
 };
 
+export type PSA_Status_01 = {
+  timestamp: Timestamp;
+  psa_actual_pos_rad: number;
+  psa_actual_speed_rad_s: number;
+  psa_actual_torque_m_nm: number;
+  psa_actual_mode_of_operation: number;
+  psa_actual_current_a: number;
+  psa_actual_voltage_v: number;
+};
+
 export type Tyre_Surface_Temp_Front = {
   timestamp: Timestamp;
   outer_fl: number;

@@ -14,6 +14,7 @@ import type {
   ICE_Status_02,
   Imu,
   Kistler,
+  PSA_Status_01,
   Tyre_Surface_Temp_Front,
   Tyre_Surface_Temp_Rear,
 } from "./Protocol";
@@ -38,6 +39,7 @@ function VehiclePanel({ context }: { context: PanelExtensionContext }): ReactEle
   const [cbaStatusRR, setCbaStatusRR] = useState<undefined | CBA_Status_RR>();
   const [iceStatus1, setIceStatus1] = useState<undefined | ICE_Status_01>();
   const [iceStatus2, setIceStatus2] = useState<undefined | ICE_Status_02>();
+  const [psaStatus1, setPsaStatus1] = useState<undefined | PSA_Status_01>();
   const [tireTempFront, setTireTempFront] = useState<undefined | Tyre_Surface_Temp_Front>();
   const [tireTempRear, setTireTempRear] = useState<undefined | Tyre_Surface_Temp_Rear>();
   const [kistlerMeas, setKistlerMeas] = useState<undefined | Kistler>();
@@ -82,6 +84,8 @@ function VehiclePanel({ context }: { context: PanelExtensionContext }): ReactEle
             setIceStatus1(frame.message as ICE_Status_01);
           } else if (frame.topic === "/throttled/flyeagle/a2rl/eav25_bsu/ice_status_02") {
             setIceStatus2(frame.message as ICE_Status_02);
+          } else if (frame.topic === "/throttled/flyeagle/a2rl/eav25_bsu/psa_status_01") {
+            setPsaStatus1(frame.message as PSA_Status_01);
           } else if (frame.topic === "/throttled/flyeagle/a2rl/eav25_bsu/tyre_surface_temp_front") {
             setTireTempFront(frame.message as Tyre_Surface_Temp_Front);
           } else if (frame.topic === "/throttled/flyeagle/a2rl/eav25_bsu/tyre_surface_temp_rear") {
@@ -120,6 +124,7 @@ function VehiclePanel({ context }: { context: PanelExtensionContext }): ReactEle
       { topic: "/throttled/flyeagle/a2rl/eav25_bsu/cba_status_rr" },
       { topic: "/throttled/flyeagle/a2rl/eav25_bsu/ice_status_01" },
       { topic: "/throttled/flyeagle/a2rl/eav25_bsu/ice_status_02" },
+      { topic: "/throttled/flyeagle/a2rl/eav25_bsu/psa_status_01" },
       { topic: "/throttled/flyeagle/a2rl/eav25_bsu/tyre_surface_temp_front" },
       { topic: "/throttled/flyeagle/a2rl/eav25_bsu/tyre_surface_temp_rear" },
       { topic: "/throttled/sensor/kistler/measurement" },
@@ -198,7 +203,6 @@ function VehiclePanel({ context }: { context: PanelExtensionContext }): ReactEle
           clutch: 0,
           brake: cbaStatusFL ? cbaStatusFL.cba_target_pressure_fl_ack : 0,
           throttle: iceStatus1 ? iceStatus1.ice_target_throttle_ack : 0,
-          steering: 0,
         }}
       />
       <TrajectoryCanvas
@@ -207,6 +211,7 @@ function VehiclePanel({ context }: { context: PanelExtensionContext }): ReactEle
         size={200}
         duration={500}
         onPointsChange={setPoints}
+        steeringAngle={psaStatus1 ? -psaStatus1.psa_actual_pos_rad * 4 : 0}
         // onAddPoint={handleAddPoint}
         // onClearPoints={handleClearPoints}
         pointColor="#ff4400"

@@ -14,6 +14,7 @@ interface TrajectoryCanvasProps {
   size?: number;
   duration?: number;
   pointColor?: string;
+  steeringAngle?: number;
   // 必需属性：通过props传入点数组
   points: Point[];
   // 回调函数
@@ -35,6 +36,7 @@ const TrajectoryCanvas = forwardRef<TrajectoryCanvasRef, TrajectoryCanvasProps>(
       size = 800,
       duration = 5000,
       pointColor = "#ef4444",
+      steeringAngle = 0,
       points = [],
       onPointsChange,
       onAddPoint,
@@ -126,14 +128,35 @@ const TrajectoryCanvas = forwardRef<TrajectoryCanvasRef, TrajectoryCanvasProps>(
       ctx.arc(size / 2, size / 2, size * 0.375, 0, Math.PI * 2, true);
       ctx.moveTo(size, size / 2);
       ctx.arc(size / 2, size / 2, size * 0.5, 0, Math.PI * 2, true);
+      ctx.lineWidth = 1;
       ctx.strokeStyle = "rgba(255, 255, 255, 1)";
       ctx.stroke();
+
+      // 绘制方向盘转角进度条
+      const steeringValue = Math.max(-100, Math.min(100, steeringAngle));
+      const barWidth = size;
+      const barX = 0;
+      const barY = size / 2;
+      const centerX = barX + barWidth / 2;
+      const progressX = centerX + (steeringValue / 100) * (barWidth / 2);
+
+      ctx.beginPath();
+      ctx.moveTo(centerX, barY);
+      ctx.lineTo(progressX, barY);
+      ctx.lineWidth = 6;
+      ctx.strokeStyle = "#228df8";
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.arc(progressX, barY, 6, 0, Math.PI * 2);
+      ctx.fillStyle = "#228df8";
+      ctx.fill();
 
       // 计算时间范围
       const now = Date.now();
       const timeRange = duration;
 
-      // 绘制坐标点（带时间衰减效果）
+      // 绘制G力坐标点（带时间衰减效果）
       points.forEach((point) => {
         const age = now - point.timestamp;
         const opacity = 1.0 - age / timeRange;
@@ -151,7 +174,7 @@ const TrajectoryCanvas = forwardRef<TrajectoryCanvasRef, TrajectoryCanvasProps>(
 
       // 继续动画循环
       animationRef.current = requestAnimationFrame(drawTrajectory);
-    }, [points, size, duration, pointColor]);
+    }, [points, size, duration, pointColor, steeringAngle]);
 
     // 自动清理过期点（通知父组件）
     useEffect(() => {
