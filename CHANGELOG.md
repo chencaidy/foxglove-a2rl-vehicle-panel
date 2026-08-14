@@ -1,5 +1,9 @@
 # vehicle-panel version history
 
+## 1.0.4
+
+- feature: add steering angle indicator
+
 ## 1.0.3
 
 - feature: add p2p mode display
