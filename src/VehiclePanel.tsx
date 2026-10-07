@@ -5,16 +5,13 @@ import { createRoot } from "react-dom/client";
 import { PowertrainInfo, PowertrainPed } from "./Powertrain";
 import type {
   Brake_Disk_Temp,
-  CBA_Status_FL,
-  CBA_Status_FR,
-  CBA_Status_RL,
-  CBA_Status_RR,
+  CbaStatus,
   ControllerBrake,
-  ICE_Status_01,
-  ICE_Status_02,
+  IceStatus,
   Imu,
   Kistler,
-  PSA_Status_01,
+  MotecStatus,
+  PsaStatus,
   Tyre_Surface_Temp_Front,
   Tyre_Surface_Temp_Rear,
 } from "./Protocol";
@@ -32,14 +29,11 @@ declare module "react" {
 
 function VehiclePanel({ context }: { context: PanelExtensionContext }): ReactElement {
   const [renderDone, setRenderDone] = useState<(() => void) | undefined>();
+  const [cbaStatus, setCbaStatus] = useState<undefined | CbaStatus>();
+  const [iceStatus, setIceStatus] = useState<undefined | IceStatus>();
+  const [motecStatus, setMotecStatus] = useState<undefined | MotecStatus>();
+  const [psaStatus, setPsaStatus] = useState<undefined | PsaStatus>();
   const [brakeDiskTemp, setBrakeDiskTemp] = useState<undefined | Brake_Disk_Temp>();
-  const [cbaStatusFL, setCbaStatusFL] = useState<undefined | CBA_Status_FL>();
-  const [cbaStatusFR, setCbaStatusFR] = useState<undefined | CBA_Status_FR>();
-  const [cbaStatusRL, setCbaStatusRL] = useState<undefined | CBA_Status_RL>();
-  const [cbaStatusRR, setCbaStatusRR] = useState<undefined | CBA_Status_RR>();
-  const [iceStatus1, setIceStatus1] = useState<undefined | ICE_Status_01>();
-  const [iceStatus2, setIceStatus2] = useState<undefined | ICE_Status_02>();
-  const [psaStatus1, setPsaStatus1] = useState<undefined | PSA_Status_01>();
   const [tireTempFront, setTireTempFront] = useState<undefined | Tyre_Surface_Temp_Front>();
   const [tireTempRear, setTireTempRear] = useState<undefined | Tyre_Surface_Temp_Rear>();
   const [kistlerMeas, setKistlerMeas] = useState<undefined | Kistler>();
@@ -68,24 +62,16 @@ function VehiclePanel({ context }: { context: PanelExtensionContext }): ReactEle
       // currentFrame has messages on subscribed topics since the last render call
       if (renderState.currentFrame && renderState.currentFrame.length > 0) {
         renderState.currentFrame.forEach((frame) => {
-          if (frame.topic === "/throttled/flyeagle/a2rl/controller/brake") {
-            setControlBrake(frame.message as ControllerBrake);
+          if (frame.topic === "/throttled/vehicle/eav26_bsu/cba_status") {
+            setCbaStatus(frame.message as CbaStatus);
+          } else if (frame.topic === "/throttled/vehicle/eav26_bsu/ice_status") {
+            setIceStatus(frame.message as IceStatus);
+          } else if (frame.topic === "/throttled/vehicle/eav26_bsu/motec_status") {
+            setMotecStatus(frame.message as MotecStatus);
+          } else if (frame.topic === "/throttled/vehicle/eav26_bsu/psa_status") {
+            setPsaStatus(frame.message as PsaStatus);
           } else if (frame.topic === "/throttled/flyeagle/a2rl/eav25_bsu/brake_disk_temp") {
             setBrakeDiskTemp(frame.message as Brake_Disk_Temp);
-          } else if (frame.topic === "/throttled/flyeagle/a2rl/eav25_bsu/cba_status_fl") {
-            setCbaStatusFL(frame.message as CBA_Status_FL);
-          } else if (frame.topic === "/throttled/flyeagle/a2rl/eav25_bsu/cba_status_fr") {
-            setCbaStatusFR(frame.message as CBA_Status_FR);
-          } else if (frame.topic === "/throttled/flyeagle/a2rl/eav25_bsu/cba_status_rl") {
-            setCbaStatusRL(frame.message as CBA_Status_RL);
-          } else if (frame.topic === "/throttled/flyeagle/a2rl/eav25_bsu/cba_status_rr") {
-            setCbaStatusRR(frame.message as CBA_Status_RR);
-          } else if (frame.topic === "/throttled/flyeagle/a2rl/eav25_bsu/ice_status_01") {
-            setIceStatus1(frame.message as ICE_Status_01);
-          } else if (frame.topic === "/throttled/flyeagle/a2rl/eav25_bsu/ice_status_02") {
-            setIceStatus2(frame.message as ICE_Status_02);
-          } else if (frame.topic === "/throttled/flyeagle/a2rl/eav25_bsu/psa_status_01") {
-            setPsaStatus1(frame.message as PSA_Status_01);
           } else if (frame.topic === "/throttled/flyeagle/a2rl/eav25_bsu/tyre_surface_temp_front") {
             setTireTempFront(frame.message as Tyre_Surface_Temp_Front);
           } else if (frame.topic === "/throttled/flyeagle/a2rl/eav25_bsu/tyre_surface_temp_rear") {
@@ -95,9 +81,11 @@ function VehiclePanel({ context }: { context: PanelExtensionContext }): ReactEle
           } else if (frame.topic === "/throttled/sensor/kistler/imu") {
             const imu = frame.message as Imu;
             trajectoryRef.current?.addPoint(
-              -(imu.linear_acceleration.y / 9.81) * 25 + 100,
+              (imu.linear_acceleration.y / 9.81) * 25 + 100,
               (imu.linear_acceleration.x / 9.81) * 25 + 100,
             );
+          } else if (frame.topic === "/throttled/flyeagle/a2rl/controller/brake") {
+            setControlBrake(frame.message as ControllerBrake);
           }
         });
       }
@@ -116,19 +104,16 @@ function VehiclePanel({ context }: { context: PanelExtensionContext }): ReactEle
     // subscribe to some topics, you could do this within other effects, based on input fields, etc
     // Once you subscribe to topics, currentFrame will contain message events from those topics (assuming there are messages).
     context.subscribe([
-      { topic: "/throttled/flyeagle/a2rl/controller/brake" },
+      { topic: "/throttled/vehicle/eav26_bsu/cba_status" },
+      { topic: "/throttled/vehicle/eav26_bsu/ice_status" },
+      { topic: "/throttled/vehicle/eav26_bsu/motec_status" },
+      { topic: "/throttled/vehicle/eav26_bsu/psa_status" },
       { topic: "/throttled/flyeagle/a2rl/eav25_bsu/brake_disk_temp" },
-      { topic: "/throttled/flyeagle/a2rl/eav25_bsu/cba_status_fl" },
-      { topic: "/throttled/flyeagle/a2rl/eav25_bsu/cba_status_fr" },
-      { topic: "/throttled/flyeagle/a2rl/eav25_bsu/cba_status_rl" },
-      { topic: "/throttled/flyeagle/a2rl/eav25_bsu/cba_status_rr" },
-      { topic: "/throttled/flyeagle/a2rl/eav25_bsu/ice_status_01" },
-      { topic: "/throttled/flyeagle/a2rl/eav25_bsu/ice_status_02" },
-      { topic: "/throttled/flyeagle/a2rl/eav25_bsu/psa_status_01" },
       { topic: "/throttled/flyeagle/a2rl/eav25_bsu/tyre_surface_temp_front" },
       { topic: "/throttled/flyeagle/a2rl/eav25_bsu/tyre_surface_temp_rear" },
       { topic: "/throttled/sensor/kistler/measurement" },
       { topic: "/throttled/sensor/kistler/imu" },
+      { topic: "/throttled/flyeagle/a2rl/controller/brake" },
     ]);
   }, [context]);
 
@@ -145,8 +130,8 @@ function VehiclePanel({ context }: { context: PanelExtensionContext }): ReactEle
             pos: "FL",
             absActive: controlBrake ? controlBrake.wheel_latched_fl : 0,
             brakeTemp: brakeDiskTemp ? brakeDiskTemp.brake_disk_temp_fl : -1,
-            brakePsi: cbaStatusFL ? cbaStatusFL.cba_actual_pressure_fl_pa / 1000 : -1,
-            brakePercent: cbaStatusFL ? cbaStatusFL.cba_actual_pressure_fl : -1,
+            brakePsi: cbaStatus ? cbaStatus.fl.actual_pressure_pa / 1000 : -1,
+            brakePercent: cbaStatus ? cbaStatus.fl.actual_pressure_percent : -1,
             tireTempOuter: tireTempFront ? tireTempFront.outer_fl : -1,
             tireTempMid: tireTempFront ? tireTempFront.center_fl : -1,
             tireTempInner: tireTempFront ? tireTempFront.inner_fl : -1,
@@ -157,8 +142,8 @@ function VehiclePanel({ context }: { context: PanelExtensionContext }): ReactEle
             pos: "FR",
             absActive: controlBrake ? controlBrake.wheel_latched_fr : 0,
             brakeTemp: brakeDiskTemp ? brakeDiskTemp.brake_disk_temp_fr : -1,
-            brakePsi: cbaStatusFR ? cbaStatusFR.cba_actual_pressure_fr_pa / 1000 : -1,
-            brakePercent: cbaStatusFR ? cbaStatusFR.cba_actual_pressure_fr : -1,
+            brakePsi: cbaStatus ? cbaStatus.fr.actual_pressure_pa / 1000 : -1,
+            brakePercent: cbaStatus ? cbaStatus.fr.actual_pressure_percent : -1,
             tireTempOuter: tireTempFront ? tireTempFront.outer_fr : -1,
             tireTempMid: tireTempFront ? tireTempFront.center_fr : -1,
             tireTempInner: tireTempFront ? tireTempFront.inner_fr : -1,
@@ -169,8 +154,8 @@ function VehiclePanel({ context }: { context: PanelExtensionContext }): ReactEle
             pos: "RL",
             absActive: controlBrake ? controlBrake.wheel_latched_rl : 0,
             brakeTemp: brakeDiskTemp ? brakeDiskTemp.brake_disk_temp_rl : -1,
-            brakePsi: cbaStatusRL ? cbaStatusRL.cba_actual_pressure_rl_pa / 1000 : -1,
-            brakePercent: cbaStatusRL ? cbaStatusRL.cba_actual_pressure_rl : -1,
+            brakePsi: cbaStatus ? cbaStatus.rl.actual_pressure_pa / 1000 : -1,
+            brakePercent: cbaStatus ? cbaStatus.rl.actual_pressure_percent : -1,
             tireTempOuter: tireTempRear ? tireTempRear.outer_rl : -1,
             tireTempMid: tireTempRear ? tireTempRear.center_rl : -1,
             tireTempInner: tireTempRear ? tireTempRear.inner_rl : -1,
@@ -181,8 +166,8 @@ function VehiclePanel({ context }: { context: PanelExtensionContext }): ReactEle
             pos: "RR",
             absActive: controlBrake ? controlBrake.wheel_latched_rr : 0,
             brakeTemp: brakeDiskTemp ? brakeDiskTemp.brake_disk_temp_rr : -1,
-            brakePsi: cbaStatusRR ? cbaStatusRR.cba_actual_pressure_rr_pa / 1000 : -1,
-            brakePercent: cbaStatusRR ? cbaStatusRR.cba_actual_pressure_rr : -1,
+            brakePsi: cbaStatus ? cbaStatus.rr.actual_pressure_pa / 1000 : -1,
+            brakePercent: cbaStatus ? cbaStatus.rr.actual_pressure_percent : -1,
             tireTempOuter: tireTempRear ? tireTempRear.outer_rr : -1,
             tireTempMid: tireTempRear ? tireTempRear.center_rr : -1,
             tireTempInner: tireTempRear ? tireTempRear.inner_rr : -1,
@@ -191,18 +176,18 @@ function VehiclePanel({ context }: { context: PanelExtensionContext }): ReactEle
       </div>
       <PowertrainInfo
         param={{
-          rpm: iceStatus2 ? iceStatus2.ice_engine_speed_rpm : -1,
+          rpm: motecStatus ? motecStatus.motor_speed_rpm : -1,
           speed: kistlerMeas ? kistlerMeas.resultant_velocity.x * 3.6 : -1,
-          gear: iceStatus1 ? iceStatus1.ice_actual_gear : 0,
-          downshift: iceStatus1 ? iceStatus1.ice_downshift_available : 0,
-          p2p: iceStatus1 ? iceStatus1.ice_push_to_pass_req : 0,
+          gear: iceStatus ? iceStatus.actual_gear : 0,
+          downshift: iceStatus ? iceStatus.downshift_available : 0,
+          p2p: iceStatus ? iceStatus.push_to_pass_ack : 0,
         }}
       />
       <PowertrainPed
         param={{
           clutch: 0,
-          brake: cbaStatusFL ? cbaStatusFL.cba_target_pressure_fl_ack : 0,
-          throttle: iceStatus1 ? iceStatus1.ice_target_throttle_ack : 0,
+          brake: cbaStatus ? cbaStatus.fl.target_pressure_ack_percent : 0,
+          throttle: iceStatus ? iceStatus.target_throttle_ack_percent : 0,
         }}
       />
       <TrajectoryCanvas
@@ -211,7 +196,7 @@ function VehiclePanel({ context }: { context: PanelExtensionContext }): ReactEle
         size={200}
         duration={500}
         onPointsChange={setPoints}
-        steeringAngle={psaStatus1 ? -psaStatus1.psa_actual_pos_rad * 4 : 0}
+        steeringAngle={psaStatus ? -psaStatus.actual_pos_rad * 4 : 0}
         // onAddPoint={handleAddPoint}
         // onClearPoints={handleClearPoints}
         pointColor="#ff4400"
