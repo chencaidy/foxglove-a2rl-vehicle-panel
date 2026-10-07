@@ -1,5 +1,9 @@
 # vehicle-panel version history
 
+## 1.0.5
+
+- fix: adopt eav26 message
+
 ## 1.0.4
 
 - feature: add steering angle indicator
