@@ -1,7 +1,3 @@
-export type Timestamp = {
-  nanoseconds: number;
-};
-
 export type Time = {
   sec: number;
   nanosec: number;
@@ -66,32 +62,28 @@ export type PsaStatus = {
   rack_angle_rad: number;
 };
 
-export type Brake_Disk_Temp = {
-  timestamp: Timestamp;
-  brake_disk_temp_fl: number;
-  brake_disk_temp_fr: number;
-  brake_disk_temp_rr: number;
-  brake_disk_temp_rl: number;
+export type BrakeDiskTemp = {
+  header: Header;
+  fl_degc: number;
+  fr_degc: number;
+  rl_degc: number;
+  rr_degc: number;
 };
 
-export type Tyre_Surface_Temp_Front = {
-  timestamp: Timestamp;
-  outer_fl: number;
-  center_fl: number;
-  inner_fl: number;
-  outer_fr: number;
-  center_fr: number;
-  inner_fr: number;
-};
-
-export type Tyre_Surface_Temp_Rear = {
-  timestamp: Timestamp;
-  outer_rl: number;
-  center_rl: number;
-  inner_rl: number;
-  outer_rr: number;
-  center_rr: number;
-  inner_rr: number;
+export type TireSurfaceTemp = {
+  header: Header;
+  fl_outer_degc: number;
+  fl_center_degc: number;
+  fl_inner_degc: number;
+  fr_outer_degc: number;
+  fr_center_degc: number;
+  fr_inner_degc: number;
+  rl_outer_degc: number;
+  rl_center_degc: number;
+  rl_inner_degc: number;
+  rr_outer_degc: number;
+  rr_center_degc: number;
+  rr_inner_degc: number;
 };
 
 export type Kistler = {

@@ -4,7 +4,7 @@ import { createRoot } from "react-dom/client";
 
 import { PowertrainInfo, PowertrainPed } from "./Powertrain";
 import type {
-  Brake_Disk_Temp,
+  BrakeDiskTemp,
   CbaStatus,
   ControllerBrake,
   IceStatus,
@@ -12,8 +12,7 @@ import type {
   Kistler,
   MotecStatus,
   PsaStatus,
-  Tyre_Surface_Temp_Front,
-  Tyre_Surface_Temp_Rear,
+  TireSurfaceTemp,
 } from "./Protocol";
 import { LeftTireInfo, RightTireInfo } from "./Tire";
 import TrajectoryCanvas, { Point, TrajectoryCanvasRef } from "./TrajectoryCanvas";
@@ -33,9 +32,8 @@ function VehiclePanel({ context }: { context: PanelExtensionContext }): ReactEle
   const [iceStatus, setIceStatus] = useState<undefined | IceStatus>();
   const [motecStatus, setMotecStatus] = useState<undefined | MotecStatus>();
   const [psaStatus, setPsaStatus] = useState<undefined | PsaStatus>();
-  const [brakeDiskTemp, setBrakeDiskTemp] = useState<undefined | Brake_Disk_Temp>();
-  const [tireTempFront, setTireTempFront] = useState<undefined | Tyre_Surface_Temp_Front>();
-  const [tireTempRear, setTireTempRear] = useState<undefined | Tyre_Surface_Temp_Rear>();
+  const [brakeDiskTemp, setBrakeDiskTemp] = useState<undefined | BrakeDiskTemp>();
+  const [tireSurfaceTemp, setTireSurfaceTemp] = useState<undefined | TireSurfaceTemp>();
   const [kistlerMeas, setKistlerMeas] = useState<undefined | Kistler>();
   const [controlBrake, setControlBrake] = useState<undefined | ControllerBrake>();
 
@@ -70,12 +68,10 @@ function VehiclePanel({ context }: { context: PanelExtensionContext }): ReactEle
             setMotecStatus(frame.message as MotecStatus);
           } else if (frame.topic === "/throttled/vehicle/eav26_bsu/psa_status") {
             setPsaStatus(frame.message as PsaStatus);
-          } else if (frame.topic === "/throttled/flyeagle/a2rl/eav25_bsu/brake_disk_temp") {
-            setBrakeDiskTemp(frame.message as Brake_Disk_Temp);
-          } else if (frame.topic === "/throttled/flyeagle/a2rl/eav25_bsu/tyre_surface_temp_front") {
-            setTireTempFront(frame.message as Tyre_Surface_Temp_Front);
-          } else if (frame.topic === "/throttled/flyeagle/a2rl/eav25_bsu/tyre_surface_temp_rear") {
-            setTireTempRear(frame.message as Tyre_Surface_Temp_Rear);
+          } else if (frame.topic === "/throttled/vehicle/eav26_bsu/brake_disk_temp") {
+            setBrakeDiskTemp(frame.message as BrakeDiskTemp);
+          } else if (frame.topic === "/throttled/vehicle/eav26_bsu/tire_surface_temp") {
+            setTireSurfaceTemp(frame.message as TireSurfaceTemp);
           } else if (frame.topic === "/throttled/sensor/kistler/measurement") {
             setKistlerMeas(frame.message as Kistler);
           } else if (frame.topic === "/throttled/sensor/kistler/imu") {
@@ -108,9 +104,8 @@ function VehiclePanel({ context }: { context: PanelExtensionContext }): ReactEle
       { topic: "/throttled/vehicle/eav26_bsu/ice_status" },
       { topic: "/throttled/vehicle/eav26_bsu/motec_status" },
       { topic: "/throttled/vehicle/eav26_bsu/psa_status" },
-      { topic: "/throttled/flyeagle/a2rl/eav25_bsu/brake_disk_temp" },
-      { topic: "/throttled/flyeagle/a2rl/eav25_bsu/tyre_surface_temp_front" },
-      { topic: "/throttled/flyeagle/a2rl/eav25_bsu/tyre_surface_temp_rear" },
+      { topic: "/throttled/vehicle/eav26_bsu/brake_disk_temp" },
+      { topic: "/throttled/vehicle/eav26_bsu/tire_surface_temp" },
       { topic: "/throttled/sensor/kistler/measurement" },
       { topic: "/throttled/sensor/kistler/imu" },
       { topic: "/throttled/flyeagle/a2rl/controller/brake" },
@@ -129,48 +124,48 @@ function VehiclePanel({ context }: { context: PanelExtensionContext }): ReactEle
           param={{
             pos: "FL",
             absActive: controlBrake ? controlBrake.wheel_latched_fl : 0,
-            brakeTemp: brakeDiskTemp ? brakeDiskTemp.brake_disk_temp_fl : -1,
+            brakeTemp: brakeDiskTemp ? brakeDiskTemp.fl_degc : -1,
             brakePsi: cbaStatus ? cbaStatus.fl.actual_pressure_pa / 1000 : -1,
             brakePercent: cbaStatus ? cbaStatus.fl.actual_pressure_percent : -1,
-            tireTempOuter: tireTempFront ? tireTempFront.outer_fl : -1,
-            tireTempMid: tireTempFront ? tireTempFront.center_fl : -1,
-            tireTempInner: tireTempFront ? tireTempFront.inner_fl : -1,
+            tireTempOuter: tireSurfaceTemp ? tireSurfaceTemp.fl_outer_degc : -1,
+            tireTempMid: tireSurfaceTemp ? tireSurfaceTemp.fl_center_degc : -1,
+            tireTempInner: tireSurfaceTemp ? tireSurfaceTemp.fl_inner_degc : -1,
           }}
         />
         <RightTireInfo
           param={{
             pos: "FR",
             absActive: controlBrake ? controlBrake.wheel_latched_fr : 0,
-            brakeTemp: brakeDiskTemp ? brakeDiskTemp.brake_disk_temp_fr : -1,
+            brakeTemp: brakeDiskTemp ? brakeDiskTemp.fr_degc : -1,
             brakePsi: cbaStatus ? cbaStatus.fr.actual_pressure_pa / 1000 : -1,
             brakePercent: cbaStatus ? cbaStatus.fr.actual_pressure_percent : -1,
-            tireTempOuter: tireTempFront ? tireTempFront.outer_fr : -1,
-            tireTempMid: tireTempFront ? tireTempFront.center_fr : -1,
-            tireTempInner: tireTempFront ? tireTempFront.inner_fr : -1,
+            tireTempOuter: tireSurfaceTemp ? tireSurfaceTemp.fr_outer_degc : -1,
+            tireTempMid: tireSurfaceTemp ? tireSurfaceTemp.fr_center_degc : -1,
+            tireTempInner: tireSurfaceTemp ? tireSurfaceTemp.fr_inner_degc : -1,
           }}
         />
         <LeftTireInfo
           param={{
             pos: "RL",
             absActive: controlBrake ? controlBrake.wheel_latched_rl : 0,
-            brakeTemp: brakeDiskTemp ? brakeDiskTemp.brake_disk_temp_rl : -1,
+            brakeTemp: brakeDiskTemp ? brakeDiskTemp.rl_degc : -1,
             brakePsi: cbaStatus ? cbaStatus.rl.actual_pressure_pa / 1000 : -1,
             brakePercent: cbaStatus ? cbaStatus.rl.actual_pressure_percent : -1,
-            tireTempOuter: tireTempRear ? tireTempRear.outer_rl : -1,
-            tireTempMid: tireTempRear ? tireTempRear.center_rl : -1,
-            tireTempInner: tireTempRear ? tireTempRear.inner_rl : -1,
+            tireTempOuter: tireSurfaceTemp ? tireSurfaceTemp.rl_outer_degc : -1,
+            tireTempMid: tireSurfaceTemp ? tireSurfaceTemp.rl_center_degc : -1,
+            tireTempInner: tireSurfaceTemp ? tireSurfaceTemp.rl_inner_degc : -1,
           }}
         />
         <RightTireInfo
           param={{
             pos: "RR",
             absActive: controlBrake ? controlBrake.wheel_latched_rr : 0,
-            brakeTemp: brakeDiskTemp ? brakeDiskTemp.brake_disk_temp_rr : -1,
+            brakeTemp: brakeDiskTemp ? brakeDiskTemp.rr_degc : -1,
             brakePsi: cbaStatus ? cbaStatus.rr.actual_pressure_pa / 1000 : -1,
             brakePercent: cbaStatus ? cbaStatus.rr.actual_pressure_percent : -1,
-            tireTempOuter: tireTempRear ? tireTempRear.outer_rr : -1,
-            tireTempMid: tireTempRear ? tireTempRear.center_rr : -1,
-            tireTempInner: tireTempRear ? tireTempRear.inner_rr : -1,
+            tireTempOuter: tireSurfaceTemp ? tireSurfaceTemp.rr_outer_degc : -1,
+            tireTempMid: tireSurfaceTemp ? tireSurfaceTemp.rr_center_degc : -1,
+            tireTempInner: tireSurfaceTemp ? tireSurfaceTemp.rr_inner_degc : -1,
           }}
         />
       </div>
