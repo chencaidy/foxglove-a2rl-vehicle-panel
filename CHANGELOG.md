@@ -1,5 +1,9 @@
 # vehicle-panel version history
 
+## 1.0.6
+
+- fix: adopt eav26 badenia message
+
 ## 1.0.5
 
 - fix: adopt eav26 message
